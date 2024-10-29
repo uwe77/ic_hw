@@ -8,7 +8,7 @@ TAG="gpu"
 IMG="${REPOSITORY}:${TAG}"
 
 USER_NAME="arg"
-REPO_NAME="ros2_gazebo"
+REPO_NAME="ic_hw2"
 CONTAINER_NAME="ros2_gazebo-gpu"
 
 CONTAINER_ID=$(docker ps -aqf "ancestor=${IMG}")
