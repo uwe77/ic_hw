@@ -8,10 +8,10 @@ y_xor = np.array([[0], [1], [1], [0]])
 
 # Initialize MLP for XOR problem
 net_arch = np.array([2, 10, 1])
-xor_mlp = MLP(net_arch=net_arch, activations="relu", learning_rate=0.001)
+xor_mlp = MLP(net_arch=net_arch, activations=["tanh", "linear"], learning_rate=0.001)
 
 # Train the MLP on XOR data
-xor_mlp.train(X_xor, y_xor, epochs=100000)
+xor_mlp.train(X_xor, y_xor, epochs=50000)
 # Plot the training loss to observe convergence
 xor_mlp.plot_loss()
 
