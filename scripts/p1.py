@@ -92,13 +92,19 @@ def train_and_plot(func, input_size, output_size, input_range, epochs=10000, net
 # Training MLP on each function
 if __name__ == "__main__":
     # Function 1: f(x) = 1 / x, x ∈ [0.1, 1]
-    train_and_plot(func1, input_size=1, output_size=1, input_range=(0.1, 1), epochs=10000)
-    
-    # Function 2: f(x, y) = x^2 + 3y, x ∈ [-1, 1], y ∈ [-1, 1]
-    train_and_plot(func2, input_size=2, output_size=1, input_range=(-1, 1), epochs=10000)
-    
-    # Function 3: f(x, y) = sin(πx) cos(πy), x ∈ [-2, 2], y ∈ [-2, 2]
-    train_and_plot(func3, input_size=2, output_size=1, input_range=(-2, 2), epochs=100000, 
+    train_and_plot(func1, input_size=1, output_size=1, input_range=(0.1, 1), epochs=10000,
                    net_arch=np.array([20]),
                    act_func="tanh",
+                   learning_rate=0.001)
+    
+    # Function 2: f(x, y) = x^2 + 3y, x ∈ [-1, 1], y ∈ [-1, 1]
+    train_and_plot(func2, input_size=2, output_size=1, input_range=(-1, 1), epochs=10000,
+                   net_arch=np.array([10]),
+                   act_func="relu",
+                   learning_rate=0.001)
+    
+    # Function 3: f(x, y) = sin(πx) cos(πy), x ∈ [-2, 2], y ∈ [-2, 2]
+    train_and_plot(func3, input_size=2, output_size=1, input_range=(-2, 2), epochs=10000, 
+                   net_arch=np.array([5]),
+                   act_func="relu",
                    learning_rate=0.001)
