@@ -51,6 +51,55 @@ def fuzzy_controller_first_order():
     plt.ylabel("Controller Output")
     plt.show()
 
+    # Compare with PID Controller (b)
+    from pso import PSO
+
+    def pid_performance(params):
+        Kp, Ki, Kd = params
+        dt = 0.1
+        time_end = 20
+        num_steps = int(time_end / dt)
+        t = np.linspace(0, time_end, num_steps)
+        response = np.zeros(num_steps)
+        error_sum = 0
+        previous_error = 0
+        setpoint = 1.0
+        for i in range(1, num_steps):
+            process_value = response[max(0, i - int(1.0 / dt))]
+            error = setpoint - process_value
+            error_sum += error * dt
+            d_error = (error - previous_error) / dt
+            previous_error = error
+            control_signal = Kp * error + Ki * error_sum + Kd * d_error
+            response[i] = response[i-1] + (dt / 10.0) * (control_signal - response[i-1])
+        return np.sum((setpoint - response) ** 2)
+
+    pso_pid = PSO(pid_performance, num_particles=30, dimensions=3, w=0.5, c1=2, c2=2)
+    best_pid = pso_pid.optimize(iterations=100)
+    print("Best PID parameters (Kp, Ki, Kd):", best_pid)
+
+    t, response = np.linspace(0, 20, 201), []
+    Kp, Ki, Kd = best_pid
+    response = np.zeros_like(t)
+    error_sum, previous_error = 0, 0
+    setpoint = 1.0
+    for i in range(1, len(t)):
+        process_value = response[max(0, i - int(1.0 / 0.1))]
+        error = setpoint - process_value
+        error_sum += error * 0.1
+        d_error = (error - previous_error) / 0.1
+        previous_error = error
+        control_signal = Kp * error + Ki * error_sum + Kd * d_error
+        response[i] = response[i - 1] + (0.1 / 10.0) * (control_signal - response[i - 1])
+
+    plt.plot(t, response, label="Optimized PID Response")
+    plt.axhline(1.0, color='r', linestyle='--', label="Setpoint")
+    plt.legend()
+    plt.xlabel("Time (s)")
+    plt.ylabel("System Output")
+    plt.title("PID Response vs. Fuzzy Controller")
+    plt.show()
+
 # Cruise Control with Fuzzy Controller
 def fuzzy_controller_cruise():
     # Define fuzzy variables
