@@ -1,102 +1,118 @@
-# Intelligent Control Homework 3
+# HW3
 
-This project contains solutions for Homework 3, focusing on designing and implementing intelligent controllers for two tasks. Each solution includes fuzzy logic controllers and a comparison with other methods.
+## Overview
+This project demonstrates the use of fuzzy logic and particle swarm optimization (PSO) for control system design. The implementation is divided into three main sections:
 
----
+1. **Problem 1(a): Fuzzy Controller Design**
+2. **Problem 1(b): PSO for PID Controller Optimization**
+3. **Problem 2: Fuzzy Cruise Control Simulation**
 
-## 1. Fuzzy Controller for First-Order Plus Time Delay Model
+## Problem 1(a): Fuzzy Controller Design
 
-### Task Description
-Design a fuzzy controller to control a system with the transfer function:
-\[
-G(s) = \frac{e^{-s}}{10s + 1}
-\]
+### Design
+A fuzzy controller is designed to act like a PID controller, utilizing three input variables:
+- `error`: The difference between the desired and actual output.
+- `delta_error`: The rate of change of error.
+- `integral_error`: The accumulation of error over time.
 
-This task is split into two parts:
+The output of the fuzzy controller is the `control_output`, which adjusts the system behavior.
 
-- **(a)** Design a fuzzy controller based on tracking errors and their derivatives for inference.
-- **(b)** Compare the fuzzy controller's performance with a PID controller optimized using Particle Swarm Optimization (PSO).
+#### Membership Functions
+- **Error**:
+  - Negative: [-1, -1, -0.5, 0]
+  - Zero: [-0.5, 0, 0.5]
+  - Positive: [0, 0.5, 1, 1]
 
-### Implementation
-1. **Fuzzy Controller**:
-    - **Input Variables**:
-        - `Error`: Tracking error.
-        - `Derivative of Error`: Rate of change of the error.
-    - **Output Variable**:
-        - `Controller Output`: Adjustments to reduce error.
-    - **Rules**:
-        - Nine rules derived from PID-like schemes (e.g., if error is positive and increasing, decrease output).
-    - Simulated with sinusoidal error input.
+- **Delta Error**:
+  - Negative: [-0.5, -0.5, -0.25, 0]
+  - Zero: [-0.25, 0, 0.25]
+  - Positive: [0, 0.25, 0.5, 0.5]
 
-2. **PID Controller**:
-    - Optimized using PSO to minimize the sum of squared errors (SSE).
-    - Comparison includes step response analysis.
+- **Integral Error**:
+  - Low: [0, 2.5, 5]
+  - Medium: [2.5, 5, 7.5]
+  - High: [5, 7.5, 10]
 
-### Results
-- **Step Response**: Shows how the fuzzy controller adapts to dynamic inputs.
-- **Comparison**: Visualized differences in performance metrics (e.g., SSE).
+- **Control Output**:
+  - Negative: [-1, -1, -0.5, 0]
+  - Zero: [-0.5, 0, 0.5]
+  - Positive: [0, 0.5, 1, 1]
 
----
-
-## 2. Cruise Control Using Fuzzy Controller
-
-### Task Description
-Design a fuzzy controller for vehicle cruise control. The goal is to maintain a constant cruising speed under varying conditions.
-
-### Implementation
-1. **System Dynamics**:
-    - Control variable: `Throttle Position`, proportional to fuel injection.
-    - Forces modeled: Air resistance, rolling friction, and engine output.
-
-2. **Fuzzy Controller**:
-    - **Input Variable**:
-        - `Speed Error`: Difference between target and current speed.
-    - **Output Variable**:
-        - `Throttle Adjustment`: Increase or decrease throttle to maintain speed.
-    - **Rules**:
-        - Example: If speed error is negative, increase throttle.
-
-3. **Simulation**:
-    - Sinusoidal speed error input to test dynamic response.
+#### Rules
+1. If `error` is positive and `delta_error` is zero, then `control_output` is positive.
+2. If `error` is negative and `delta_error` is negative, then `control_output` is negative.
+3. If `error` is zero and `integral_error` is medium, then `control_output` is zero.
+4. If `error` is positive and `integral_error` is high, then `control_output` is negative.
+5. If `error` is negative and `integral_error` is low, then `control_output` is positive.
 
 ### Results
-- **Throttle Adjustment Response**: Demonstrates how the controller adapts to varying errors to maintain speed.
+A fuzzy controller response was simulated over a range of error values, demonstrating its behavior.
 
----
+![Fuzzy Controller Response](./data/1a_response_plot.png)
 
-## How to Run
-1. Ensure all dependencies are installed:
-    - Python libraries: `numpy`, `matplotlib`, `scikit-fuzzy`.
-2. Run the script:
-    ```bash
-    python hw3.py
-    ```
-3. View plots for both controllers' performance.
+## Problem 1(b): PSO for PID Controller Optimization
 
----
+### Design
+Particle Swarm Optimization (PSO) is used to tune the parameters of a PID controller (`Kp`, `Kd`, `Ki`) for a given plant.
 
-## Dependencies
-- **Python**: Version 3.8+
-- **Libraries**:
-    - `numpy`
-    - `matplotlib`
-    - `scikit-fuzzy`
+#### Plant Transfer Function
+- Numerator: [1]
+- Denominator: [10, 1]
 
----
+#### Performance Index
+The performance index is based on:
+1. Rise Time
+2. Overshoot
+3. Settling Time
+4. Steady-State Error (SSE)
 
-## File Structure
-- `hw3.py`: Main script containing both tasks.
-- `pso.py`: Implementation of the PSO algorithm for PID optimization.
+#### PSO Initialization
+- Number of particles: 30
+- Dimensions: 3 (Kp, Kd, Ki)
+- Iterations: 100
 
----
+### Results
+The optimized PID parameters produced a step response with minimal overshoot and fast settling time.
 
-## Outputs
-- Step response for the fuzzy controller.
-- Comparison plots between the fuzzy controller and the optimized PID controller.
-- Throttle response for the cruise control system.
+![Optimized Step Response](./data/1b_response_plot.png)
+![Optimized Step Curve](./data/1b_opt_plot.png)
 
----
+## Problem 2: Fuzzy Cruise Control Simulation
 
-## Author
-This solution was developed for Intelligent Control Homework 3, demonstrating the application of fuzzy logic and optimization techniques in control systems.
+### Design
+A fuzzy controller is used to simulate cruise control for a vehicle. The controller adjusts throttle input based on:
+1. Speed error (difference between desired and actual speed).
+2. Change in speed error (rate of error).
 
+#### Membership Functions
+- **Error**:
+  - Negative: [-50, -25, 0]
+  - Zero: [-10, 0, 10]
+  - Positive: [0, 25, 50]
+
+- **Change in Error**:
+  - Negative: [-10, -5, 0]
+  - Zero: [-2, 0, 2]
+  - Positive: [0, 5, 10]
+
+- **Throttle**:
+  - Low: [-0.1, 0.0, 0.5]
+  - Medium: [0.2, 0.5, 0.8]
+  - High: [0.5, 1.0, 1.0]
+
+#### Rules
+1. If `error` is negative and `d_error` is negative, then `throttle` is high.
+2. If `error` is negative and `d_error` is zero, then `throttle` is medium.
+3. If `error` is negative and `d_error` is positive, then `throttle` is low.
+4. If `error` is zero and `d_error` is negative, then `throttle` is medium.
+5. If `error` is zero and `d_error` is zero, then `throttle` is low.
+6. If `error` is positive and `d_error` is positive, then `throttle` is low.
+
+### Results
+The cruise control system successfully adjusted the throttle to maintain a target speed of 100 km/h.
+
+![Speed Response](./data/2_speed_plot.png)
+![Throttle Response](./data/2_throttle_plot.png)
+
+## Conclusion
+This project demonstrates the integration of fuzzy logic and optimization techniques for control system design. The fuzzy controller provided PID-like behavior, and PSO successfully optimized the PID parameters for improved performance. The cruise control simulation highlights the practical application of fuzzy control in real-world systems.
